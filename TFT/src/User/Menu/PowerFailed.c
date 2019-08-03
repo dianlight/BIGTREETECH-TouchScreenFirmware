@@ -27,12 +27,13 @@ FIL fpPowerFailed;
 bool powerFailedCreate(char *path) 
 { 
   UINT br;
+  
+  create_ok = false;
 
-  if(f_open(&fpPowerFailed, powerFailedFileName, FA_OPEN_ALWAYS | FA_WRITE)!=FR_OK)
-  {
-    create_ok = false;
-    return false;
-  }
+  if(infoFile.source != TFT_SD)  return false;//support SD Card only now
+  
+  if(f_open(&fpPowerFailed, powerFailedFileName, FA_OPEN_ALWAYS | FA_WRITE) != FR_OK)  return false;
+  
   f_write(&fpPowerFailed, path, MAX_PATH_LEN, &br);
   f_write(&fpPowerFailed, &infoBreakPoint, sizeof(BREAK_POINT), &br);
   f_sync(&fpPowerFailed);
@@ -40,7 +41,6 @@ bool powerFailedCreate(char *path)
   create_ok = true;
   return true;  
 }
-
 
 void powerFailedCache(u32 offset) 
 {
@@ -87,17 +87,20 @@ void powerFailedCache(u32 offset)
 
 void powerFailedClose(void) 
 {
+  FRESULT rst;
   if(create_ok==false)   return;
 
-  f_close(&fpPowerFailed);    
+  rst = f_close(&fpPowerFailed);
+//  printf("close:%d\r\n", rst);
 }
 
 void  powerFailedDelete(void) 
-{  
+{
+  FRESULT rst;
   if(create_ok==false)   return;
   
-  f_close(&fpPowerFailed); 
-  f_unlink(powerFailedFileName);
+  rst = f_unlink(powerFailedFileName);
+//  printf("unlink:%d\r\n", rst);
   clearPowerFailed();
 }
 
