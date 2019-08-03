@@ -1,6 +1,9 @@
 #ifndef _INCLUDES_H_
 #define _INCLUDES_H_
 
+#include "configuration.h"
+#include "autoconfiguration.h"
+
 #include "variants.h"
 
 #include <stdio.h>
@@ -47,6 +50,7 @@
 #include "myfatfs.h"
 #include "Gcode/gcode.h"
 #include "Gcode/mygcodefs.h"
+#include "Gcode/host_actions.h"
 #include "flashStore.h"
 #include "parseACK.h"
 
@@ -159,6 +163,7 @@ enum
   ICON_BSD_SOURCE,
   ICON_SD_SOURCE,
   ICON_U_DISK,
+  ICON_CHECK_CONFIG,
 //  ICON_RESERVE
 };
 
@@ -167,7 +172,6 @@ enum
 typedef struct
 {	
   bool wait;       //Whether wait for Marlin's response
-  bool rx_ok;      //Whether receive Marlin's response
   bool connected;  //Whether have connected to Marlin
 #ifdef ONBOARD_SD_SUPPORT     
   bool printing;   //Whether the host is busy in printing execution. ( USB serial printing and GCODE print from onboard)

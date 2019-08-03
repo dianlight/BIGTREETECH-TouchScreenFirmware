@@ -1,6 +1,15 @@
 #include "Popup.h"
-#include "includes.h"
-
+#include "configuration.h"
+#include "autoconfiguration.h"
+#include "qrcode.h"
+#include "lcd.h"
+#include "GUI.h"
+#include "language.h"
+#include "ui_draw.h"
+#include "touch_process.h"
+#include "interfaceCmd.h"
+#include "coordinate.h"
+#include "ff.h"
 
 #define BUTTON_NUM 1
 
@@ -57,6 +66,46 @@ void popupDrawPage(BUTTON *btn, const u8 *title, const u8 *context, const u8 *ye
   
   for(u8 i = 0; i < buttonNum; i++)
     GUI_DrawButton(&windowButton[i], 0);    
+}
+
+void popupDrawQRCode(BUTTON *btn, const u8 *title, const u8 *context, const u8 *yes, const u8 *no)
+{
+  buttonNum = 0;
+  windowButton = btn;
+  if(yes)
+  {
+    windowButton[buttonNum++].context = yes;
+  }
+  if(no)
+  {
+    windowButton[buttonNum++].context = no;
+  }
+
+  TSC_ReDrawIcon = windowReDrawButton;
+  GUI_DrawWindow(&window, title,(u8 *)"");
+
+  // Create the QR code
+  QRCode qrcode;
+  uint8_t qrcodeData[qrcode_getBufferSize(3)];
+  qrcode_initText(&qrcode, qrcodeData, 3, 0,(char *)context);
+
+
+  int scale = 3;
+  int x_pos = 100;
+  int y_pos = 100;
+  for (int y = 0; y < qrcode.size; y++) {
+    for (int x = 0; x < qrcode.size; x++) {
+        if (qrcode_getModule(&qrcode, x, y))
+        {
+            GUI_FillRectColor( (x*scale)+x_pos,(y*scale)+y_pos,(x*scale)+x_pos+scale,(y*scale)+y_pos+scale,WHITE);
+        }
+  }
+
+}
+
+
+  for(u8 i = 0; i < buttonNum; i++)
+    GUI_DrawButton(&windowButton[i], 0);
 }
 
 static const GUI_RECT popupMenuRect = POPUP_RECT_SINGLE_CONFIRM;

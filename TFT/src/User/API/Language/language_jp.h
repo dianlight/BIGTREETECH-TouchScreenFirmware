@@ -89,4 +89,7 @@
     #define JP_ONBOARDSD            "内部 mSDカード"
     #define JP_READ_ONBOARDSD_ERROR "内部 mSDカードの読み取りがエラー発生しました!"
 
+    #define JP_CHECK_CONFIG          "Check"
+
+
 #endif

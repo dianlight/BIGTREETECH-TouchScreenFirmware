@@ -9,6 +9,8 @@ void Serial_DMAReEnable(void);
 void Serial_Config(u32 baud);
 void Serial_DeConfig(void);
 void Serial_Puts(char *s);
+char *Serial_ReadLn(void);
+
 
 #endif 
 

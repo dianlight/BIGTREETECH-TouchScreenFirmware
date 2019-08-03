@@ -15,6 +15,7 @@ enum
 };
 
 void menuMain(void);
+void connectionCheck(void);
 
 #endif
 

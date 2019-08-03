@@ -92,7 +92,8 @@ const char *const en_pack[LABEL_NUM]={
   EN_U_DISK_INSERTED,
   EN_U_DISK_REMOVED,
   EN_ONBOARDSD,
-  EN_READ_ONBOARDSD_ERROR
+  EN_READ_ONBOARDSD_ERROR,
+  EN_CHECK_CONFIG   
 };
 
 const char *const cn_pack[LABEL_NUM]={
@@ -179,7 +180,8 @@ const char *const cn_pack[LABEL_NUM]={
   CN_U_DISK_INSERTED,
   CN_U_DISK_REMOVED,
   CN_ONBOARDSD,
-  CN_READ_ONBOARDSD_ERROR
+  CN_READ_ONBOARDSD_ERROR,
+  CN_CHECK_CONFIG  
 };
 
 const char *const ru_pack[LABEL_NUM]={
@@ -266,7 +268,8 @@ const char *const ru_pack[LABEL_NUM]={
   RU_U_DISK_INSERTED,
   RU_U_DISK_REMOVED,
   RU_ONBOARDSD,
-  RU_READ_ONBOARDSD_ERROR
+  RU_READ_ONBOARDSD_ERROR,
+  RU_CHECK_CONFIG  
 };
 
 const char *const jp_pack[LABEL_NUM]={
@@ -353,7 +356,8 @@ const char *const jp_pack[LABEL_NUM]={
   JP_U_DISK_INSERTED,
   JP_U_DISK_REMOVED,
   JP_ONBOARDSD,
-  JP_READ_ONBOARDSD_ERROR
+  JP_READ_ONBOARDSD_ERROR,
+  JP_CHECK_CONFIG  
 };
 
 const char *const am_pack[LABEL_NUM]={
@@ -440,7 +444,8 @@ const char *const am_pack[LABEL_NUM]={
   AM_U_DISK_INSERTED,
   AM_U_DISK_REMOVED,
   AM_ONBOARDSD,
-  AM_READ_ONBOARDSD_ERROR
+  AM_READ_ONBOARDSD_ERROR,
+  AM_CHECK_CONFIG  
 };
 
 const char *const de_pack[LABEL_NUM]={
@@ -527,7 +532,8 @@ const char *const de_pack[LABEL_NUM]={
   DE_U_DISK_INSERTED,
   DE_U_DISK_REMOVED,
   DE_ONBOARDSD,
-  DE_READ_ONBOARDSD_ERROR
+  DE_READ_ONBOARDSD_ERROR,
+  DE_CHECK_CONFIG  
 };
 
 bool isRussia(const u8 *const str)

@@ -88,5 +88,8 @@
     
     #define RU_ONBOARDSD            "OnboardSD"
     #define RU_READ_ONBOARDSD_ERROR "Read Onboard SD card error!"
+
+    #define RU_CHECK_CONFIG          "Check"
+
     
 #endif

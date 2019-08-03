@@ -1,6 +1,8 @@
 #include "parseACK.h"
+#include <ctype.h>
+//#include "logger.h"
 
-char ack_rev_buf[ACK_MAX_SIZE];
+char *ack_rev_buf;
 static u16 ack_index=0;
 
 static char ack_seen(const char *str)
@@ -18,6 +20,25 @@ static char ack_seen(const char *str)
   }
   return false;
 }
+
+
+static char ack_seen_ic(const char *str)
+{
+  u16 i;
+  for(ack_index=0; ack_index<ACK_MAX_SIZE && ack_rev_buf[ack_index]!=0; ack_index++)
+  {
+    for(i=0; str[i]!=0 && ack_rev_buf[ack_index+i]!=0 && tolower(ack_rev_buf[ack_index+i])==tolower(str[i]); i++)
+    {}
+    if(str[i]==0)
+    {
+      ack_index += i;
+      return true;
+    }
+  }
+  return false;
+}
+
+
 static char ack_cmp(const char *str)
 {
   u16 i;
@@ -57,10 +78,10 @@ void ackPopupInfo(const char *info)
 
 void parseACK(void)
 {
-  if(infoHost.rx_ok != true) return;      //not get response data
+//  if(infoHost.rx_ok != true) return;      //not get response data
   if(infoHost.connected == false)         //not connected to Marlin
   {
-    if(!ack_seen("T:") || !ack_seen("ok"))    goto parse_end;  //the first response should be such as "T:25/50 ok\n"
+    if(!ack_seen(connectmagic) && !ack_seen("ok")) return;
     infoHost.connected = true;
   }    
 
@@ -74,42 +95,54 @@ void parseACK(void)
   }
   if(requestCommandInfo.inResponse)
   {
-    if(strlen(requestCommandInfo.cmd_rev_buf)+strlen(ack_rev_buf) < CMD_MAX_REV)
+    if(requestCommandInfo.cmd_rev_buf_pos < ACK_MAX_LINE)
     {
-        strcat(requestCommandInfo.cmd_rev_buf,ack_rev_buf);
+        requestCommandInfo.cmd_rev_buf[requestCommandInfo.cmd_rev_buf_pos++]=ack_rev_buf;
     }
     else 
     {
-        requestCommandInfo.done = true;
-        requestCommandInfo.inResponse = false;
+        closeRequestCommandInfo(false);
+        ack_index = 0;
         ackPopupInfo(errormagic);
     }
     gcodeProcessed = true;
   }
   if(requestCommandInfo.inResponse && ack_seen(requestCommandInfo.errorMagic ))
   {
-    requestCommandInfo.done = true;
-    requestCommandInfo.inResponse = false;
-    requestCommandInfo.inError = true;
+    closeRequestCommandInfo(false);
     gcodeProcessed = true;
   }
   if(requestCommandInfo.inResponse &&  ack_seen(requestCommandInfo.stopMagic ))
   {
-    requestCommandInfo.done = true;
-    requestCommandInfo.inResponse = false;
+    closeRequestCommandInfo(true);
     gcodeProcessed = true;
   }
   // end 
 
+  // Async Gcode Callback
+  if(requestCommandInfo.asyncCallback != NULL)
+  {
+    for(int c=0; c < CMD_ASYNC; c++)
+    {
+      (*requestCommandInfo.asyncCallback[c])(ack_rev_buf);
+    }
+  }
+  // End
+
+  //debugfixed(11,"W%x %.30s", infoHost.wait,ack_rev_buf);
+
+
   if(ack_cmp("ok\r\n") || ack_cmp("ok\n"))
   {
     infoHost.wait = false;	
+   // debugfixed(12,"-New HW:%d Bw:%d Tw:%d", infoHost.wait, heatGetIsWaiting(BED), heatGetIsWaiting(0));
   }
   else
   {
     if(ack_seen("ok"))
     {
       infoHost.wait=false;
+     // debugfixed(12,"+New HW:%d Bw:%d Tw:%d", infoHost.wait, heatGetIsWaiting(BED), heatGetIsWaiting(0));
     }					
     if(ack_seen("T:")) 
     {
@@ -142,7 +175,7 @@ void parseACK(void)
     }
     else if(ack_seen(bsdprintingmagic))
     {
-      if(infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
+      if(infoHost.printing && infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
           infoMenu.menu[++infoMenu.cur] = menuPrinting;
           infoHost.printing=true;
       }
@@ -166,11 +199,26 @@ void parseACK(void)
     {
         ackPopupInfo(echomagic);
     }
+
+  #ifdef M118_ACTION_COMMAND
+    else if(ack_seen(commentmagic) && ack_seen_ic(actioncommandmagic))
+    {
+        if(!parseHostAction(&ack_rev_buf[ack_index]))
+          ackPopupInfo("Unknown ACTION");
+    }
+  #endif
+ }  
+}
+
+void parseACKml(void)
+{
+  ack_rev_buf = USART1_ReadLn();
+  while(ack_rev_buf != NULL)
+  {
+    parseACK();
+    loopProcess();
+    ack_rev_buf = USART1_ReadLn();
   }
-  
-parse_end:
-  infoHost.rx_ok=false;
-  Serial_DMAReEnable();
 }
 
 

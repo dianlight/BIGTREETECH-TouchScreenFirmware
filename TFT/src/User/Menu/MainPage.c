@@ -1,7 +1,7 @@
 #include "mainpage.h"
 #include "includes.h"
 
-//1¸ötitle(±êÌâ), ITEM_PER_PAGE¸öitem(Í¼±ê+±êÇ©) 
+//1ï¿½ï¿½title(ï¿½ï¿½ï¿½ï¿½), ITEM_PER_PAGEï¿½ï¿½item(Í¼ï¿½ï¿½+ï¿½ï¿½Ç©)
 const MENUITEMS mainPageItems = {
 //   title
 LABEL_READY,
@@ -37,6 +37,101 @@ void menuMain(void)
       case KEY_ICON_7: 
         storeCmd("G28\n");
         storeCmd("G29\n");
+// TODO: Manual level support
+//  Disconnected.
+/*
+Connecting...
+Printer is now online.
+>>> G29 S1
+SENDING:G29 S1
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 2 of 9
+>>> G29 S23
+SENDING:G29 S23
+S out of range (0-5).
+>>> G29 S3
+SENDING:G29 S3
+J not entered.
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 3 of 9
+>>> G29 S3
+SENDING:G29 S3
+J not entered.
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 4 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 5 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 6 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 7 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 8 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 9 of 9
+>>> G29 S2
+SENDING:G29 S2
+Mesh probing done.
+MBL G29 point -1 of 9
+>>> G29 S2
+SENDING:G29 S2
+Start mesh probing with "G29 S1" first.
+>>> M500
+SENDING:M500
+echo:Settings Stored (614 bytes; crc 31912)
+>>> G29 S0
+SENDING:G29 S0
+Mesh Bed Leveling has no data.
+>>> G29 S1
+SENDING:G29 S1
+>>> G29 S1
+SENDING:G29 S1
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 2 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 3 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 4 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 5 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 6 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 7 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 8 of 9
+>>> G29 S2
+SENDING:G29 S2
+MBL G29 point 9 of 9
+>>> G29 S2
+SENDING:G29 S2
+Mesh probing done.
+MBL G29 point -1 of 9
+>>> M500
+SENDING:M500
+echo:Settings Stored (614 bytes; crc 31912)
+//
+Cap:AUTOLEVEL:0
+Cap:Z_PROBE:0
+Cap:LEVELING_DATA:1
+
+*/
+
         break;
       default:break;
     }		
@@ -44,3 +139,13 @@ void menuMain(void)
   }
 }
 
+void connectionCheck(void)
+{
+    static u32 nowTime = 0;
+    if(infoHost.connected)return;
+    if(OS_GetTime()<nowTime+300) return;
+
+    if(storeCmd("M115\n")==false) return;
+
+    nowTime=OS_GetTime();
+}

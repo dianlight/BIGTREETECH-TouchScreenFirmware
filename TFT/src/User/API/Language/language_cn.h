@@ -89,4 +89,7 @@
     #define CN_ONBOARDSD            "°åÔØSD"
     #define CN_READ_ONBOARDSD_ERROR "¶Á°åÔØSD¿¨³ö´í!"
 
+    #define CN_CHECK_CONFIG          "Check"
+
+
 #endif

@@ -1,6 +1,17 @@
 #ifndef _CONFIGRATION_H_
 #define _CONFIGRATION_H_
 
+/**
+ * AUTOCONFIGURATION
+ * NOTE: If MARLIN2_AUTOCONFIG is defined all config in this file is use only as default and the setting ( if exists or are derivable )
+ * is based on referenced marlin config 
+ */
+#define MARLIN2_AUTOCONFIG        // if enabled the configuration is derived from Configuration.h and Configuration_adv.h 
+#ifdef MARLIN2_AUTOCONFIG
+  // The directory where marlin source are (git clone root)
+  #define MARLIN2_HOME  /Users/ltarantino/Documents/3D Printer/Marlin Git/Merlin2.0
+#endif
+
 #define TOOL_NUM     1    //set in 1~6
 #define EXTRUDER_NUM 1    //set in 1~6
 #define FAN_NUM      1    //set in 1~6
@@ -41,5 +52,19 @@
   #define M27_REFRESH                 3       // Time in sec for M27 command 
   #define M27_WATCH_OTHER_SOURCES    true     // if true the polling on M27 report is always active. Case: SD print start not from TFT35
 #endif
+
+#define M290_BABYSTEPPING                     // Support Babystepping M290 command
+
+// Use M155 to report temperature instead M105 Polling ( Requires AUTO_REPORT_TEMPERATURES in Configuration_adv.h )
+#define M155_AUTOREPORT
+
+// Support M118 Actions command 
+#define M118_ACTION_COMMAND
+
+// Use M115 with EXTENDED_CAPABILITIES_REPORT and other strategies to check the config at runtime.
+#define RUNTIME_CONFIG_VALIDATE
+
+// User QRCode for extended reporting ( errors, info etch )
+#define USE_QRCODE
 
 #endif

@@ -13,7 +13,12 @@ LABEL_BACKGROUND,
   {ICON_HEAT,                 LABEL_HEAT},
   {ICON_FAN,                  LABEL_FAN},
   {ICON_PERCENTAGE,           LABEL_PERCENTAGE},
-  {ICON_BABYSTEP,             LABEL_BABYSTEP},}
+#ifdef M290_BABYSTEPPING
+  {ICON_BABYSTEP,             LABEL_BABYSTEP},
+#else
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+#endif
+},
 };
 
 const ITEM itemIsPause[2] = {
@@ -57,6 +62,11 @@ void setPrintingTime(u32 RTtime)
   }
 }
 
+void setABSPrintingTime(u32 time)
+{
+  infoPrinting.time = time;      
+}
+
 //
 void setPrintSize(u32 size)
 {
@@ -68,6 +78,12 @@ void setPrintCur(u32 cur)
 {
   infoPrinting.cur = cur;
 }
+
+u32 getPrintCur(void)
+{
+  return infoPrinting.cur;
+}
+
 
 u8 getPrintProgress(void)
 {
@@ -165,6 +181,13 @@ void menuBeforePrinting(void)
 
       startGcodeExecute();
       break;
+    case SERIAL: // GCode from another serial or USB
+      infoPrinting.size  = 100;
+      infoPrinting.cur = 0;
+      infoPrinting.printing = true;
+      printSetUpdateWaiting(true);
+      infoHost.printing=true; 
+      break;        
   }
   infoPrinting.printing = true;
   infoMenu.menu[infoMenu.cur] = menuPrinting;
@@ -239,6 +262,14 @@ bool setPrintPause(bool is_pause)
         }
       }
       break;
+    case SERIAL:
+      infoPrinting.pause = is_pause;   
+      if(is_pause){
+        sendActionCommandPause();
+      } else {
+        sendActionCommandResume();
+      }
+      break;        
   }
   resumeToPause(is_pause);
   pauseLock = false;
@@ -306,9 +337,12 @@ void printingDrawPage(void)
 {
   menuDrawPage(&printingItems);
   //	Scroll_CreatePara(&titleScroll, infoFile.title,&titleRect);  //
-  GUI_DispLenString(titleRect.x0, titleRect.y0, 
+  if(strlen(infoFile.title) > 4)
+  {
+    GUI_DispLenString(titleRect.x0, titleRect.y0, 
                     getCurGcodeName(infoFile.title), 1, 
                    (titleRect.x1 - titleRect.x0)/BYTE_WIDTH );
+  }
   GUI_DispString(progressRect.x0, TIME_Y, (u8* )"T:", 0);
   GUI_DispChar(progressRect.x0+BYTE_WIDTH*4, TIME_Y, ':', 0);
   GUI_DispChar(progressRect.x0+BYTE_WIDTH*7, TIME_Y, ':', 0);
@@ -390,6 +424,7 @@ void menuPrinting(void)
         else
         {
           exitPrinting();
+          infoPrinting.printing = false;
           infoMenu.cur--;
         }					
         break;
@@ -406,9 +441,11 @@ void menuPrinting(void)
         infoMenu.menu[++infoMenu.cur] = menuSpeed;
         break;
       
+#ifdef M290_BABYSTEPPING
       case KEY_ICON_7:
         infoMenu.menu[++infoMenu.cur] = menuBabyStep;
         break;
+#endif
       
       default :break;
     }                
@@ -434,6 +471,9 @@ void completePrinting(void)
     case TFT_SD:
       f_close(&infoPrinting.file);	
       break;
+
+    case SERIAL:
+     break;  
   }
   infoPrinting.printing = false;
   powerFailedClose();
@@ -453,6 +493,9 @@ void haltPrinting(void)
     case TFT_SD:
       clearCmdQueue();	
       break;
+    case SERIAL:
+      sendActionCommandCancel();
+     break;       
   }
 
   heatClearIsWaiting();

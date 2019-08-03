@@ -22,9 +22,25 @@
   #error "UART5 don't support DMA"
 #endif
 
-#define DMA_TRANS_LEN  ACK_MAX_SIZE
+#define DMA_TRANS_LEN  ACK_MAX_SIZE*ACK_MAX_LINE
+#define LINE_FEED '\n'
 
-char *dma_mem_buf = ack_rev_buf;
+struct cur_line {
+  char data[ACK_MAX_SIZE];
+  unsigned int pos;
+};
+
+static char dma_mem_buf[DMA_TRANS_LEN]; 
+static struct cur_line currentLine;
+static char ack_rev_buf[ACK_MAX_LINE][ACK_MAX_SIZE];
+static u8 ack_read_line = 0, ack_write_line = 0;
+
+
+void resetLineBuffer(void)
+{
+  memset(currentLine.data,0,ACK_MAX_SIZE);
+  currentLine.pos=0;
+}
 
 void Serial_Config(u32 baud)
 {
@@ -40,6 +56,8 @@ void Serial_Config(u32 baud)
   SERIAL_DMA_CHANNEL->CCR |= 3<<12;   //Channel priority level
   SERIAL_DMA_CHANNEL->CCR |= 1<<7;    //Memory increment mode
   SERIAL_DMA_CHANNEL->CCR |= 1<<0;    //DMA		
+
+  resetLineBuffer();
 }
 
 void Serial_DeConfig(void)
@@ -69,14 +87,33 @@ void USART_IRQHandler(uint8_t port)
 
     rx_len = DMA_TRANS_LEN - SERIAL_DMA_CHANNEL->CNDTR;
 
-    if(dma_mem_buf[rx_len-1]=='\n')
-    {
-      infoHost.rx_ok=true;
-    }
-    else if(rx_len > DMA_TRANS_LEN-5)
-    {
-      infoHost.rx_ok=true;
-    }
+    for(u16 stop=0; stop < rx_len; stop++ )
+     {
+//      if(dma_mem_buf[stop] == 0x00) continue;
+
+      currentLine.data[currentLine.pos++] = dma_mem_buf[stop]; 
+
+      if(dma_mem_buf[stop] == LINE_FEED || currentLine.pos > ACK_MAX_SIZE - 2){
+        if(currentLine.pos > 1)
+        {
+          memcpy(ack_rev_buf[ack_write_line],currentLine.data,currentLine.pos);
+          ack_rev_buf[ack_write_line++][currentLine.pos]=0;
+          if(ack_read_line == ack_write_line)
+          {
+              // Ring Buffer overflow. Drop old line.
+              ack_read_line++;
+              if(ack_read_line == ACK_MAX_LINE) ack_read_line = 0;
+          }
+          else if(ack_write_line == ACK_MAX_LINE) 
+          {
+            ack_write_line = 0;
+          }
+        }
+        resetLineBuffer(); 
+      }
+     }
+    // Reenable DMA
+    Serial_DMAReEnable();
   }
 }
 
@@ -119,4 +156,11 @@ int fputc(int ch, FILE *f)
 	while((SERIAL_NUM->SR&0X40)==0);
     SERIAL_NUM->DR = (u8) ch;      
 	return ch;
+}
+
+char *Serial_ReadLn(void)
+{
+  if ( ack_read_line == ACK_MAX_LINE) ack_read_line=0;
+  if ( ack_read_line == ack_write_line) return NULL;
+  return ack_rev_buf[ack_read_line++];
 }

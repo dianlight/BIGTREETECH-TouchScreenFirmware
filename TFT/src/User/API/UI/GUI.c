@@ -1,4 +1,10 @@
 #include "GUI.h"
+#include "Configuration.h"
+
+#ifdef USE_QRCODE
+  #include <qrcode.h>
+  #undef bool
+#endif // USE_QRCODE
 #include "includes.h"
 
 uint16_t COLOR = FK_COLOR;
@@ -990,3 +996,32 @@ void GUI_DrawWindow(const WINDOW *window, const uint8_t *title, const uint8_t *i
   GUI_SetBkColor(nowBackColor);
   GUI_SetColor(nowFontColor);
 }
+
+#ifdef USE_QRCODE
+// see https://github.com/ricmoo/QRCode
+void GUI_DrawQRCode(int16_t x_pos, int16_t y_pos, int scale,int type, const uint8_t *message)
+{
+  // Create the QR code
+  QRCode qrcode;
+  uint8_t qrcodeData[qrcode_getBufferSize(type)];
+  qrcode_initText(&qrcode, qrcodeData, type, ECC_LOW,(char *)message);
+
+  if( scale == -1)
+    scale = 3;
+  if(x_pos > LCD_WIDTH-(qrcode.size*scale))
+    x_pos = LCD_WIDTH-(qrcode.size*scale)-scale;
+  if(y_pos > LCD_HEIGHT-(qrcode.size*scale))
+    y_pos = LCD_HEIGHT-(qrcode.size*scale)-scale;
+
+  for (int y = 0; y < qrcode.size; y++)
+  {
+    for (int x = 0; x < qrcode.size; x++)
+    {
+        if (qrcode_getModule(&qrcode, x, y))
+        {
+            GUI_FillRectColor( (x*scale)+x_pos,(y*scale)+y_pos,(x*scale)+x_pos+scale,(y*scale)+y_pos+scale,WHITE);
+        }
+    }
+  }
+}
+#endif // USE_QRCODE

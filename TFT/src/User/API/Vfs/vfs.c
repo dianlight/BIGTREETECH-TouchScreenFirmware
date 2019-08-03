@@ -16,6 +16,10 @@ bool mountFS(void)
     
     case BOARD_SD:
       return mountGcodeSDCard();
+
+    case SERIAL:
+      return 1;  
+
   }
   return false;
 }
@@ -46,6 +50,7 @@ char* getCurFileSource(void)
     case TFT_SD:     return "SD:";
     case TFT_UDISK:  return "U:";
     case BOARD_SD:   return "bSD:";
+    case SERIAL:     return "AUX:";
   }
   return NULL;
 }
@@ -76,6 +81,9 @@ bool scanPrintFiles(void)
     
     case BOARD_SD:
       return scanPrintFilesGcodeFs();
+
+    case SERIAL:
+      return 0; // TODO: Implement with marlin External_UI interface  
   }
   return false;
 }

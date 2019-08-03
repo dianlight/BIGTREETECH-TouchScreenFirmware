@@ -38,9 +38,9 @@
     #define AM_PERCENTAGE_SPEED     "Speed"
     #define AM_PERCENTAGE_FLOW      "Flow"
     #define AM_VALUE_ZERO           "Zero"
-    #define AM_1_DEGREE             "1¡æ"
-    #define AM_5_DEGREE             "5¡æ"
-    #define AM_10_DEGREE            "10¡æ"
+    #define AM_1_DEGREE             "1ï¿½ï¿½"
+    #define AM_5_DEGREE             "5ï¿½ï¿½"
+    #define AM_10_DEGREE            "10ï¿½ï¿½"
     #define AM_X_INC                "X+"
     #define AM_Y_INC                "Y+"
     #define AM_Z_INC                "Z+"
@@ -89,5 +89,7 @@
     
     #define AM_ONBOARDSD            "OnboardSD"
     #define AM_READ_ONBOARDSD_ERROR "Read Onboard SD card error!"
+
+    #define AM_CHECK_CONFIG          "Check"
 
 #endif

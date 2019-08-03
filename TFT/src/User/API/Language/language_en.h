@@ -38,9 +38,9 @@
     #define EN_PERCENTAGE_SPEED     "Speed"
     #define EN_PERCENTAGE_FLOW      "Flow"    
     #define EN_VALUE_ZERO           "Zero"
-    #define EN_1_DEGREE             "1¡æ"
-    #define EN_5_DEGREE             "5¡æ"
-    #define EN_10_DEGREE            "10¡æ"
+    #define EN_1_DEGREE             "1ï¿½ï¿½"
+    #define EN_5_DEGREE             "5ï¿½ï¿½"
+    #define EN_10_DEGREE            "10ï¿½ï¿½"
     #define EN_X_INC                "X+"
     #define EN_Y_INC                "Y+"
     #define EN_Z_INC                "Z+"
@@ -88,5 +88,8 @@
     
     #define EN_ONBOARDSD            "OnboardSD"
     #define EN_READ_ONBOARDSD_ERROR "Read Onboard SD card error!"
+
+    #define EN_CHECK_CONFIG          "Check"
+
     
 #endif

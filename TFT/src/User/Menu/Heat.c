@@ -184,6 +184,9 @@ void menuHeat(void)
   KEY_VALUES  key_num = KEY_IDLE;
 
   update_time=100;
+#ifdef M155_AUTOREPORT
+  async_M155(update_time / 100);
+#endif
 
   menuDrawPage(&heatItems);
   showTemperature();

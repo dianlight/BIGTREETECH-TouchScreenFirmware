@@ -28,9 +28,11 @@ bool setPrintPause(bool is_pause);
 bool isPrinting(void);	
 bool isPause(void);
 void setPrintingTime(u32 RTtime);
+void setABSPrintingTime(u32 time);
 
 void setPrintSize(u32 size);
 void setPrintCur(u32 cur);
+u32 getPrintCur(void);
 
 u8   getPrintProgress(void);
 u32  getPrintTime(void);

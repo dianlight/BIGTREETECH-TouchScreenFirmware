@@ -126,5 +126,9 @@ typedef struct
 
 void GUI_DrawWindow(const WINDOW *window, const uint8_t *title, const uint8_t *inf);
 
+#ifdef USE_QRCODE
+void GUI_DrawQRCode(int16_t x_pos, int16_t y_pos, int scale, int type, const uint8_t *message);
+#endif
+
 #endif
 
