@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/ltarantino/.platformio/penv/bin:/Users/ltarantino/.platformio/penv:/usr/local/opt/mysql@5.5/bin:/usr/local/opt/libxml2/bin:/usr/local/opt/openssl/bin:/Users/ltarantino/google-cloud-sdk/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/opt/coreutils/libexec/gnubin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
