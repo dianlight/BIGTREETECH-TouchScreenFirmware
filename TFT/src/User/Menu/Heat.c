@@ -44,7 +44,7 @@ const char* const heatDisplayID[] = HEAT_DISPLAY_ID;
 const char* heatCmd[] = HEAT_CMD;
 const char* heatWaitCmd[] = HEAT_WAIT_CMD;
 
-static HEATER  heater = {{0}, NOZZLE0, NOZZLE0};
+static HEATER  heater = {{{0}}, NOZZLE0, NOZZLE0};
 static u32     update_time = 300;
 static bool    update_waiting = false;
 static bool    send_waiting[HEATER_NUM];
@@ -103,6 +103,9 @@ void heatSetIsWaiting(TOOL tool, bool isWaiting)
   {
     update_time = 300;		
   }
+#ifdef M155_AUTOREPORT
+  async_M155(update_time / 100);
+#endif   
 }
 
 void heatClearIsWaiting(void)
@@ -112,6 +115,9 @@ void heatClearIsWaiting(void)
     heater.T[i].waiting = false;
   }
   update_time = 300;
+  #ifdef M155_AUTOREPORT
+    async_M155(update_time / 100);
+  #endif   
 }
 
 /* Set current heater tool, nozzle or hot bed */
@@ -143,6 +149,9 @@ TOOL heatGetCurrentToolNozzle(void)
 void heatSetUpdateTime(u32 time)
 {
   update_time=time;
+#ifdef M155_AUTOREPORT
+  async_M155(time / 100);
+#endif   
 }
 
 /* Set whether we need to query the current temperature */
@@ -280,6 +289,7 @@ void menuHeat(void)
 void loopCheckHeater(void)
 {
   u8 i;
+  #ifndef M155_AUTOREPORT
   static u32  nowTime=0;
 
   do
@@ -292,6 +302,7 @@ void loopCheckHeater(void)
     nowTime=OS_GetTime();
     update_waiting=true;
   }while(0);
+  #endif // M155_AUTOREPORT
 
   /* Query the heater that needs to wait for the temperature to rise, whether it reaches the set temperature */
   for(i=0; i<HEATER_NUM; i++)

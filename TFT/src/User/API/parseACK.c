@@ -212,12 +212,12 @@ void parseACK(void)
 
 void parseACKml(void)
 {
-  ack_rev_buf = USART1_ReadLn();
+  ack_rev_buf = Serial_ReadLn();
   while(ack_rev_buf != NULL)
   {
     parseACK();
     loopProcess();
-    ack_rev_buf = USART1_ReadLn();
+    ack_rev_buf = Serial_ReadLn();
   }
 }
 

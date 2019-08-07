@@ -220,11 +220,13 @@ KEY_VALUES menuKeyGetValue(void)
 
 void loopProcess(void)
 {
+  connectionCheck();                  // Check if the connection is OK.
+
   getGcodeFromFile();                 //Get Gcode command from the file to be printed
            
   sendQueueCmd();                     //Parse and send Gcode commands in the queue
   
-  parseACK();                         //Parse the received slave response information
+  parseACKml();                         //Parse the received slave response information
 
   loopCheckHeater();			            //Temperature related settings
   
@@ -235,6 +237,10 @@ void loopProcess(void)
 #endif
 
   loopReminderClear();	              //If there is a message in the status bar, timed clear
+
+#if defined M155_AUTOREPORT || defined  M27_AUTOREPORT
+  loopAutoreportRefresh();            // Unsleep every XXX seconds. (Usefull if the printer reboot but the TFT no)
+#endif
   
   loopVolumeReminderClear();
 
