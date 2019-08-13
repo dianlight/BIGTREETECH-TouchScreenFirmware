@@ -64,9 +64,9 @@
             #define M290_BABYSTEPPING
         #endif
 
-        #if !defined BIGTREETECH_TFT35_LCD && defined M118_ACTION_COMMAND
-            #error "M118_ACTION_COMMAND Enabled but Marlin config without BIGTREETECH_TFT35_LCD"
-        #elif defined BIGTREETECH_TFT35_LCD && !defined M118_ACTION_COMMAND
+        #if !defined BIGTREETECH_TFT_LCD && defined M118_ACTION_COMMAND
+            #error "M118_ACTION_COMMAND Enabled but Marlin config without BIGTREETECH_TFT_LCD"
+        #elif defined BIGTREETECH_TFT_LCD && !defined M118_ACTION_COMMAND
             #define M118_ACTION_COMMAND
         #endif
 
