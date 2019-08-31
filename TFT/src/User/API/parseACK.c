@@ -144,7 +144,7 @@ void parseACK(void)
       infoHost.wait=false;
      // debugfixed(12,"+New HW:%d Bw:%d Tw:%d", infoHost.wait, heatGetIsWaiting(BED), heatGetIsWaiting(0));
     }					
-    if(ack_seen("T:")) 
+    if(ack_seen("T:") || ack_seen("T0:")) 
     {
       heatSetCurrentTemp(heatGetCurrentToolNozzle(), ack_value()+0.5);
       heatSetTargetTemp(heatGetCurrentToolNozzle(), ack_second_value()+0.5);
